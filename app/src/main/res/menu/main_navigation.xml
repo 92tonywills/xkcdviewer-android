@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/navigation_item_starred"
+        android:title="@string/starred"
+        android:icon="@drawable/ic_star"/>
+    <item android:id="@+id/navigation_item_random"
+        android:title="@string/random"
+        android:icon="@drawable/ic_random"/>
+    <item android:id="@+id/navigation_item_all"
+        android:title="@string/all"
+        android:icon="@drawable/ic_list"/>
+</menu>
