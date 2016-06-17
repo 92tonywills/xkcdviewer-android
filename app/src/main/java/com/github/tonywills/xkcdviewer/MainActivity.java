@@ -24,17 +24,17 @@ public class MainActivity extends AppCompatActivity {
         bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
             @Override public void onMenuTabSelected(@IdRes int menuItemId) {
                 switch (menuItemId) {
+                    case R.id.navigation_item_latest: break;
                     case R.id.navigation_item_random: break;
                     case R.id.navigation_item_starred: break;
-                    case R.id.navigation_item_all: break;
                 }
             }
 
             @Override public void onMenuTabReSelected(@IdRes int menuItemId) {
                 switch (menuItemId) {
+                    case R.id.navigation_item_latest: break;
                     case R.id.navigation_item_random: break;
                     case R.id.navigation_item_starred: break;
-                    case R.id.navigation_item_all: break;
                 }
             }
         });
