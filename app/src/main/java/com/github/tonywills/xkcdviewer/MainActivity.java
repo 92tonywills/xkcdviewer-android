@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadBottomNavigation(Bundle savedInstanceState) {
         bottomBar = BottomBar.attach(this, savedInstanceState);
-        bottomBar.setMaxFixedTabs(2);
         bottomBar.setItems(R.menu.main_navigation);
         bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
             @Override public void onMenuTabSelected(@IdRes int menuItemId) {
@@ -41,9 +40,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomBar.setDefaultTabPosition(1);
-        bottomBar.mapColorForTab(0, ContextCompat.getColor(this, R.color.colorAccent));
-        bottomBar.mapColorForTab(1, ContextCompat.getColor(this, R.color.colorAccent_2));
-        bottomBar.mapColorForTab(2, ContextCompat.getColor(this, R.color.colorAccent_3));
+        bottomBar.getBar().setBackgroundColor(ContextCompat.getColor(this, R.color.light));
+        bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorAccent));
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
