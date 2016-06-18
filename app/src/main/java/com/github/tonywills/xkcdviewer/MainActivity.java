@@ -2,6 +2,7 @@ package com.github.tonywills.xkcdviewer;
 
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
@@ -25,11 +26,11 @@ public class MainActivity extends AppCompatActivity implements ViewComicFragment
         bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
             @Override public void onMenuTabSelected(@IdRes int menuItemId) {
                 switch (menuItemId) {
-                    case R.id.navigation_item_latest: break;
+                    case R.id.navigation_item_latest:
+                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_LATEST));
+                        break;
                     case R.id.navigation_item_random:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main_container, ViewComicFragment.newInstance())
-                                .commit();
+                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
                         break;
                     case R.id.navigation_item_starred: break;
                 }
@@ -37,20 +38,25 @@ public class MainActivity extends AppCompatActivity implements ViewComicFragment
 
             @Override public void onMenuTabReSelected(@IdRes int menuItemId) {
                 switch (menuItemId) {
-                    case R.id.navigation_item_latest: break;
+                    case R.id.navigation_item_latest:
+                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_LATEST));
+                        break;
                     case R.id.navigation_item_random:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main_container, ViewComicFragment.newInstance())
-                                .commit();
+                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
                         break;
                     case R.id.navigation_item_starred: break;
                 }
             }
         });
 
-        bottomBar.setDefaultTabPosition(1);
         bottomBar.getBar().setBackgroundColor(ContextCompat.getColor(this, R.color.light));
         bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorAccent));
+    }
+
+    private void switchToFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_container, fragment)
+                .commit();
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
