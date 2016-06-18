@@ -101,7 +101,10 @@ public class ViewComicFragment extends Fragment {
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_share: return true;
-            case R.id.action_star: return true;
+            case R.id.action_star:
+                XkcdService.getInstance(getContext()).setComicFavourite(comic, !comic.isFavourite());
+                item.setIcon(comic.isFavourite() ? R.drawable.ic_star_filled : R.drawable.ic_star_outline);
+                return true;
 
             default: return super.onOptionsItemSelected(item);
         }
@@ -125,7 +128,6 @@ public class ViewComicFragment extends Fragment {
 
     public interface ComicViewerListener {
         void setTitleFromComicViewer(String title);
-        void setComicFavourite(boolean favourite, Comic comic);
     }
 
 }

@@ -74,10 +74,6 @@ public class MainActivity extends AppCompatActivity implements OnMenuTabClickLis
         setTitle(title);
     }
 
-    @Override public void setComicFavourite(boolean favourite, Comic comic) {
-
-    }
-
     @Override public void setTitleFromFavouritesFragment(String title) {
         setTitle(title);
     }
