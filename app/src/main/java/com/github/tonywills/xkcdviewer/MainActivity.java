@@ -25,7 +25,11 @@ public class MainActivity extends AppCompatActivity {
             @Override public void onMenuTabSelected(@IdRes int menuItemId) {
                 switch (menuItemId) {
                     case R.id.navigation_item_latest: break;
-                    case R.id.navigation_item_random: break;
+                    case R.id.navigation_item_random:
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, ViewComicFragment.newInstance())
+                                .commit();
+                        break;
                     case R.id.navigation_item_starred: break;
                 }
             }
@@ -33,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
             @Override public void onMenuTabReSelected(@IdRes int menuItemId) {
                 switch (menuItemId) {
                     case R.id.navigation_item_latest: break;
-                    case R.id.navigation_item_random: break;
+                    case R.id.navigation_item_random:
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, ViewComicFragment.newInstance())
+                                .commit();
+                        break;
                     case R.id.navigation_item_starred: break;
                 }
             }
