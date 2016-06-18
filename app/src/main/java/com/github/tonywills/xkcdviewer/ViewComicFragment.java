@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.github.tonywills.xkcdviewer.api.XkcdService;
 import com.github.tonywills.xkcdviewer.api.model.Comic;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -25,10 +26,12 @@ public class ViewComicFragment extends Fragment {
 
     private static final String TAG = "ViewComicFragment";
 
-    public static final int MODE_RANDOM = 0x0457;
-    public static final int MODE_LATEST = 0x1745;
+    public static final int MODE_RANDOM   = 0x0457;
+    public static final int MODE_LATEST   = 0x1745;
+    public static final int MODE_SPECIFIC = 0x0473;
 
     private static final String ARG_MODE = "mode";
+    private static final String ARG_COMIC = "comic";
 
     @BindView(R.id.image_view) ImageView imageView;
     private ComicViewerListener listener;
@@ -39,6 +42,15 @@ public class ViewComicFragment extends Fragment {
         ViewComicFragment fragment = new ViewComicFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_MODE, mode);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ViewComicFragment newInstance(Comic comic) {
+        ViewComicFragment fragment = new ViewComicFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_MODE, MODE_SPECIFIC);
+        args.putString(ARG_COMIC, new Gson().toJson(comic));
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,6 +98,10 @@ public class ViewComicFragment extends Fragment {
             case MODE_RANDOM:
                 listener.setTitleFromComicViewer("Random Comic");
                 XkcdService.getInstance(getContext()).getRandomComic(comicCallback);
+                break;
+            case MODE_SPECIFIC:
+                comicCallback.complete(
+                        new Gson().fromJson(getArguments().getString(ARG_COMIC), Comic.class));
                 break;
 
             default:

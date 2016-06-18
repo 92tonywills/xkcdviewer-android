@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements OnMenuTabClickLis
 
     private void switchToFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.comic_quick_in, R.anim.comic_quick_out)
                 .replace(R.id.main_container, fragment)
                 .commit();
     }
@@ -79,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements OnMenuTabClickLis
     }
 
     @Override public void didSelectComic(Comic comic) {
-
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.comic_in, R.anim.favourite_list_out, R.anim.favourte_list_in, R.anim.comic_out)
+                .replace(R.id.main_container, ViewComicFragment.newInstance(comic))
+                .addToBackStack("showComic")
+                .commit();
     }
 }
