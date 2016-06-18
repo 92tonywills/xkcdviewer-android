@@ -10,7 +10,8 @@ import com.github.tonywills.xkcdviewer.api.model.Comic;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
-public class MainActivity extends AppCompatActivity implements OnMenuTabClickListener, ViewComicFragment.ComicViewerListener {
+public class MainActivity extends AppCompatActivity implements OnMenuTabClickListener,
+        ViewComicFragment.ComicViewerListener, FavouriteComicsFragment.FavouriteComicsFragmentListener {
 
     private BottomBar bottomBar;
 
@@ -47,7 +48,9 @@ public class MainActivity extends AppCompatActivity implements OnMenuTabClickLis
             case R.id.navigation_item_random:
                 switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
                 break;
-            case R.id.navigation_item_starred: break;
+            case R.id.navigation_item_starred:
+                switchToFragment(FavouriteComicsFragment.newInstance());
+                break;
         }
 
     }
@@ -60,7 +63,9 @@ public class MainActivity extends AppCompatActivity implements OnMenuTabClickLis
             case R.id.navigation_item_random:
                 switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
                 break;
-            case R.id.navigation_item_starred: break;
+            case R.id.navigation_item_starred:
+                switchToFragment(FavouriteComicsFragment.newInstance());
+                break;
         }
 
     }
@@ -70,6 +75,14 @@ public class MainActivity extends AppCompatActivity implements OnMenuTabClickLis
     }
 
     @Override public void setComicFavourite(boolean favourite, Comic comic) {
+
+    }
+
+    @Override public void setTitleFromFavouritesFragment(String title) {
+        setTitle(title);
+    }
+
+    @Override public void didSelectComic(Comic comic) {
 
     }
 }

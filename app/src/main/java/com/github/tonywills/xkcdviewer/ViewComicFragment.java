@@ -81,11 +81,11 @@ public class ViewComicFragment extends Fragment {
         switch (mode) {
             case MODE_LATEST:
                 listener.setTitleFromComicViewer("Latest");
-                XkcdService.instance.getLatestComic(comicCallback);
+                XkcdService.getInstance(getContext()).getLatestComic(comicCallback);
                 break;
             case MODE_RANDOM:
                 listener.setTitleFromComicViewer("Random Comic");
-                XkcdService.instance.getRandomComic(comicCallback);
+                XkcdService.getInstance(getContext()).getRandomComic(comicCallback);
                 break;
 
             default:
@@ -113,9 +113,12 @@ public class ViewComicFragment extends Fragment {
                 ViewComicFragment.this.comic = comic;
                 listener.setTitleFromComicViewer(comic.getTitle());
                 imageView.setContentDescription(comic.getAlt());
-                Picasso.with(getContext())
-                        .load(comic.getImg())
-                        .into(imageView);
+                Context context = getContext();
+                if (context != null) {
+                    Picasso.with(context)
+                            .load(comic.getImg())
+                            .into(imageView);
+                }
             }
         }
     };
