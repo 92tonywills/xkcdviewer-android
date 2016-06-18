@@ -5,10 +5,11 @@ import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
+import com.github.tonywills.xkcdviewer.api.model.Comic;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ViewComicFragment.ComicViewerListener {
 
     private BottomBar bottomBar;
 
@@ -55,5 +56,13 @@ public class MainActivity extends AppCompatActivity {
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         bottomBar.onSaveInstanceState(outState);
+    }
+
+    @Override public void comicLoaded(Comic comic) {
+        setTitle(comic.getTitle());
+    }
+
+    @Override public void setComicFavourite(boolean favourite, Comic comic) {
+
     }
 }
