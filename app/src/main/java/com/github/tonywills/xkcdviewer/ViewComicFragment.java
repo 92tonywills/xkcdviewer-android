@@ -80,9 +80,11 @@ public class ViewComicFragment extends Fragment {
     private void loadComic() {
         switch (mode) {
             case MODE_LATEST:
+                listener.setTitle("Latest");
                 XkcdService.instance.getLatestComic(comicCallback);
                 break;
             case MODE_RANDOM:
+                listener.setTitle("Random Comic");
                 XkcdService.instance.getRandomComic(comicCallback);
                 break;
 
@@ -109,7 +111,7 @@ public class ViewComicFragment extends Fragment {
         @Override public void complete(@Nullable Comic comic) {
             if (comic != null) {
                 ViewComicFragment.this.comic = comic;
-                listener.comicLoaded(comic);
+                listener.setTitle(comic.getTitle());
                 imageView.setContentDescription(comic.getAlt());
                 Picasso.with(getContext())
                         .load(comic.getImg())
@@ -119,7 +121,7 @@ public class ViewComicFragment extends Fragment {
     };
 
     public interface ComicViewerListener {
-        void comicLoaded(Comic comic);
+        void setTitleFromComicViewer(String title);
         void setComicFavourite(boolean favourite, Comic comic);
     }
 

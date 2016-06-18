@@ -10,7 +10,7 @@ import com.github.tonywills.xkcdviewer.api.model.Comic;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
-public class MainActivity extends AppCompatActivity implements ViewComicFragment.ComicViewerListener {
+public class MainActivity extends AppCompatActivity implements OnMenuTabClickListener, ViewComicFragment.ComicViewerListener {
 
     private BottomBar bottomBar;
 
@@ -23,32 +23,7 @@ public class MainActivity extends AppCompatActivity implements ViewComicFragment
     private void loadBottomNavigation(Bundle savedInstanceState) {
         bottomBar = BottomBar.attach(this, savedInstanceState);
         bottomBar.setItems(R.menu.main_navigation);
-        bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
-            @Override public void onMenuTabSelected(@IdRes int menuItemId) {
-                switch (menuItemId) {
-                    case R.id.navigation_item_latest:
-                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_LATEST));
-                        break;
-                    case R.id.navigation_item_random:
-                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
-                        break;
-                    case R.id.navigation_item_starred: break;
-                }
-            }
-
-            @Override public void onMenuTabReSelected(@IdRes int menuItemId) {
-                switch (menuItemId) {
-                    case R.id.navigation_item_latest:
-                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_LATEST));
-                        break;
-                    case R.id.navigation_item_random:
-                        switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
-                        break;
-                    case R.id.navigation_item_starred: break;
-                }
-            }
-        });
-
+        bottomBar.setOnMenuTabClickListener(this);
         bottomBar.getBar().setBackgroundColor(ContextCompat.getColor(this, R.color.light));
         bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorAccent));
     }
@@ -64,8 +39,34 @@ public class MainActivity extends AppCompatActivity implements ViewComicFragment
         bottomBar.onSaveInstanceState(outState);
     }
 
-    @Override public void comicLoaded(Comic comic) {
-        setTitle(comic.getTitle());
+    @Override public void onMenuTabSelected(@IdRes int menuItemId) {
+        switch (menuItemId) {
+            case R.id.navigation_item_latest:
+                switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_LATEST));
+                break;
+            case R.id.navigation_item_random:
+                switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
+                break;
+            case R.id.navigation_item_starred: break;
+        }
+
+    }
+
+    @Override public void onMenuTabReSelected(@IdRes int menuItemId) {
+        switch (menuItemId) {
+            case R.id.navigation_item_latest:
+                switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_LATEST));
+                break;
+            case R.id.navigation_item_random:
+                switchToFragment(ViewComicFragment.newInstance(ViewComicFragment.MODE_RANDOM));
+                break;
+            case R.id.navigation_item_starred: break;
+        }
+
+    }
+
+    @Override public void setTitleFromComicViewer(String title) {
+        setTitle(title);
     }
 
     @Override public void setComicFavourite(boolean favourite, Comic comic) {
