@@ -2,11 +2,13 @@ package com.github.tonywills.xkcdviewer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,6 +43,7 @@ public class ViewComicFragment extends Fragment {
     private Comic comic;
     private int mode;
     private boolean hasParent;
+    private ShareActionProvider shareActionProvider;
 
     public static ViewComicFragment newInstance(int mode) {
         ViewComicFragment fragment = new ViewComicFragment();
@@ -140,6 +143,7 @@ public class ViewComicFragment extends Fragment {
                 }
                 return true;
             case R.id.action_share:
+                shareComic();
                 return true;
             case R.id.action_star:
                 XkcdService.getInstance(getContext()).setComicFavourite(comic, !comic.isFavourite());
@@ -165,6 +169,16 @@ public class ViewComicFragment extends Fragment {
             }
         }
     };
+
+    private void shareComic() {
+        if (comic == null) { return; }
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TITLE, comic.getTitle());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, comic.getImg());
+        shareIntent.setType("text/plain");
+        startActivity(Intent.createChooser(shareIntent, "Share with..."));
+    }
 
     public interface ComicViewerListener {
         void setTitleFromComicViewer(String title);
