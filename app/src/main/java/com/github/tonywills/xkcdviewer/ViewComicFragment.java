@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,11 +34,13 @@ public class ViewComicFragment extends Fragment {
 
     private static final String ARG_MODE = "mode";
     private static final String ARG_COMIC = "comic";
+    private static final String ARG_HAS_PARENT = "hasParent";
 
     @BindView(R.id.image_view) ImageView imageView;
     private ComicViewerListener listener;
     private Comic comic;
     private int mode;
+    private boolean hasParent;
 
     public static ViewComicFragment newInstance(int mode) {
         ViewComicFragment fragment = new ViewComicFragment();
@@ -51,6 +55,7 @@ public class ViewComicFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(ARG_MODE, MODE_SPECIFIC);
         args.putString(ARG_COMIC, new Gson().toJson(comic));
+        args.putBoolean(ARG_HAS_PARENT, true);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,6 +81,7 @@ public class ViewComicFragment extends Fragment {
     @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mode = getArguments().getInt(ARG_MODE, 0);
+        hasParent = getArguments().getBoolean(ARG_HAS_PARENT, false);
         setHasOptionsMenu(true);
     }
 
@@ -87,6 +93,17 @@ public class ViewComicFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, getActivity());
         loadComic();
+    }
+
+    @Override public void onResume() {
+        super.onResume();
+        try {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setDisplayHomeAsUpEnabled(hasParent);
+        } catch (ClassCastException | NullPointerException e) {
+            Log.d(TAG, "onCreate: Couldn't set home button");
+        }
     }
 
     private void loadComic() {
@@ -116,7 +133,13 @@ public class ViewComicFragment extends Fragment {
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_share: return true;
+            case android.R.id.home:
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
+                return true;
+            case R.id.action_share:
+                return true;
             case R.id.action_star:
                 XkcdService.getInstance(getContext()).setComicFavourite(comic, !comic.isFavourite());
                 item.setIcon(comic.isFavourite() ? R.drawable.ic_star_filled : R.drawable.ic_star_outline);

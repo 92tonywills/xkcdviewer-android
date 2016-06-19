@@ -5,8 +5,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +79,18 @@ public class FavouriteComicsFragment extends Fragment {
         comics.addAll(XkcdService.getInstance(getContext()).getFavouriteComics());
         adapter.notifyDataSetChanged();
         errorView.setVisibility(comics.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override public void onResume() {
+        super.onResume();
+        listener.setTitleFromFavouritesFragment("Favourites");
+        try {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        } catch (ClassCastException | NullPointerException e) {
+            Log.d(TAG, "onCreate: Couldn't set home button");
+        }
     }
 
     public interface FavouriteComicsFragmentListener {
