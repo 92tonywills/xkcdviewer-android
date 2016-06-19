@@ -1,6 +1,6 @@
 package com.github.tonywills.xkcdviewer.api.model;
 
-import android.media.Image;
+import android.graphics.Bitmap;
 
 public class Comic {
 
@@ -9,8 +9,9 @@ public class Comic {
     private String img;
     private int num;
 
-    private Image loadedImage;
     private boolean favourite;
+    private String localCopyPath;
+    private Bitmap localCopy;
 
     public String getAlt() {
         return alt;
@@ -28,19 +29,27 @@ public class Comic {
         return title;
     }
 
-    public Image getLoadedImage() {
-        return loadedImage;
-    }
-
-    public void setLoadedImage(Image loadedImage) {
-        this.loadedImage = loadedImage;
-    }
-
     public boolean isFavourite() {
         return favourite;
     }
 
     public void setFavourite(boolean favourite) {
         this.favourite = favourite;
+    }
+
+    public String getLocalCopyPath() {
+        return localCopyPath;
+    }
+
+    public void setLocalCopyPath(String localCopyPath) {
+        this.localCopyPath = localCopyPath;
+    }
+
+    public Bitmap getLocalCopy() {
+        return localCopy;
+    }
+
+    public void setLocalCopy(Bitmap localCopy) {
+        this.localCopy = localCopy;
     }
 }

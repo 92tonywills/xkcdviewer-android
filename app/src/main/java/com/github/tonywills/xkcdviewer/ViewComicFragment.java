@@ -2,6 +2,7 @@ package com.github.tonywills.xkcdviewer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -141,8 +142,11 @@ public class ViewComicFragment extends Fragment {
             case R.id.action_share:
                 return true;
             case R.id.action_star:
-                XkcdService.getInstance(getContext()).setComicFavourite(comic, !comic.isFavourite());
-                item.setIcon(comic.isFavourite() ? R.drawable.ic_star_filled : R.drawable.ic_star_outline);
+                try {
+                    comic.setLocalCopy(((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                    XkcdService.getInstance(getContext()).setComicFavourite(comic, !comic.isFavourite());
+                    item.setIcon(comic.isFavourite() ? R.drawable.ic_star_filled : R.drawable.ic_star_outline);
+                } catch (ClassCastException | NullPointerException ignored) {}
                 return true;
 
             default: return super.onOptionsItemSelected(item);
