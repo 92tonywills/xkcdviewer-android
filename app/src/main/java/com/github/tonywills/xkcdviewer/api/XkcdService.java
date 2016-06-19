@@ -22,7 +22,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public final class XkcdService {
 
     private static XkcdService instance;
-    private Context context;
 
     public static XkcdService getInstance(Context context) {
         if (instance == null) { instance = new XkcdService(context); }
@@ -38,7 +37,6 @@ public final class XkcdService {
     private int maxComicNumber = -1;
 
     public XkcdService(Context context) {
-        this.context = context;
         xkcdprefs = context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
         favouriteComics = xkcdprefs.getStringSet(PREF_KEY_FAVOURITES, new HashSet<String>());
         api = new Retrofit.Builder().baseUrl("http://xkcd.com/")
@@ -50,18 +48,6 @@ public final class XkcdService {
         api.getLatestComic().enqueue(new Callback<Comic>() {
             @Override public void onResponse(Call<Comic> call, Response<Comic> response) {
                 maxComicNumber = response.body().getNum();
-                callCompletion(response, callback);
-            }
-
-            @Override public void onFailure(Call<Comic> call, Throwable t) {
-                callback.complete(null);
-            }
-        });
-    }
-
-    public void getComicByNumber(int number, final ComicCallback callback) {
-        api.getComic(number).enqueue(new Callback<Comic>() {
-            @Override public void onResponse(Call<Comic> call, Response<Comic> response) {
                 callCompletion(response, callback);
             }
 

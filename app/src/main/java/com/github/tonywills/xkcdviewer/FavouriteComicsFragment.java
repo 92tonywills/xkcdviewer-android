@@ -50,6 +50,7 @@ public class FavouriteComicsFragment extends Fragment {
         attachListener(context);
     }
 
+    @SuppressWarnings("deprecation")
     @Override public void onAttach(Activity activity) {
         super.onAttach(activity);
         attachListener(activity);
