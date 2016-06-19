@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import com.github.tonywills.xkcdviewer.api.model.Comic;
@@ -106,12 +107,20 @@ public final class XkcdService {
         callback.complete(comic);
     }
 
-    public List<Comic> getFavouriteComics() {
-        List<Comic> comics = new ArrayList<>();
-        for (String comicJson : favouriteComics) {
-            comics.add(new Gson().fromJson(comicJson, Comic.class));
-        }
-        return comics;
+    public void getFavouriteComics(final ComicListCallback callback) {
+        new AsyncTask<Void, Void, List<Comic>>() {
+            @Override protected List<Comic> doInBackground(Void[] params) {
+                List<Comic> comics = new ArrayList<>();
+                for (String comicJson : favouriteComics) {
+                    comics.add(new Gson().fromJson(comicJson, Comic.class));
+                }
+                return comics;
+            }
+
+            @Override protected void onPostExecute(List<Comic> comics) {
+                callback.complete(comics);
+            }
+        }.execute();
     }
 
     public void setComicFavourite(Comic comic, boolean favourite) {
@@ -126,24 +135,36 @@ public final class XkcdService {
         xkcdprefs.edit().putStringSet(PREF_KEY_FAVOURITES, favouriteComics).apply();
     }
 
-    private void saveImageForComic(Comic comic) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        comic.getLocalCopy().compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File file = new File(context.getFilesDir(), Uri.parse(comic.getImg()).getLastPathSegment());
-        try {
-            boolean success = file.createNewFile();
-            if (!success) throw new IOException("Could not create file");
-            FileOutputStream fo = new FileOutputStream(file);
-            fo.write(bytes.toByteArray());
-            fo.close();
-            comic.setLocalCopyPath(file.getPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void saveImageForComic(final Comic comic) {
+        new AsyncTask<Void, Void, File>() {
+            @Override protected File doInBackground(Void... params) {
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                comic.getLocalCopy().compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                File file = new File(context.getFilesDir(), Uri.parse(comic.getImg()).getLastPathSegment());
+                try {
+                    boolean success = file.createNewFile();
+                    if (!success) throw new IOException("Could not create file");
+                    FileOutputStream fo = new FileOutputStream(file);
+                    fo.write(bytes.toByteArray());
+                    fo.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return file;
+            }
+
+            @Override protected void onPostExecute(File file) {
+                comic.setLocalCopyPath(file.getPath());
+            }
+        }.execute();
     }
 
     public interface ComicCallback {
         void complete(@Nullable Comic comic);
+    }
+
+    public interface ComicListCallback {
+        void complete(List<Comic> comics);
     }
 
 }

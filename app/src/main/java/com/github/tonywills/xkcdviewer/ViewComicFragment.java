@@ -161,8 +161,10 @@ public class ViewComicFragment extends Fragment {
                 imageView.setContentDescription(comic.getAlt());
                 Context context = getContext();
                 if (context != null) {
+                    String path = comic.getLocalCopyPath() == null ? comic.getImg() : comic.getLocalCopyPath();
+                    Log.d(TAG, "comicCallback: Loading from path " + path);
                     Picasso.with(context)
-                            .load(comic.getImg())
+                            .load(path)
                             .into(imageView);
                 }
             }

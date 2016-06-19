@@ -75,10 +75,15 @@ public class FavouriteComicsFragment extends Fragment {
         ButterKnife.bind(this, getActivity());
         favouritesList.setAdapter(adapter);
         favouritesList.setLayoutManager(new LinearLayoutManager(getContext()));
-        comics.clear();
-        comics.addAll(XkcdService.getInstance(getContext()).getFavouriteComics());
-        adapter.notifyDataSetChanged();
-        errorView.setVisibility(comics.isEmpty() ? View.VISIBLE : View.GONE);
+        XkcdService.getInstance(getContext()).getFavouriteComics(new XkcdService.ComicListCallback() {
+            @Override public void complete(List<Comic> comics) {
+                Log.d(TAG, "complete() called with: " + "comics = [" + comics + "]");
+                FavouriteComicsFragment.this.comics.clear();
+                FavouriteComicsFragment.this.comics.addAll(comics);
+                adapter.notifyDataSetChanged();
+                errorView.setVisibility(comics.isEmpty() ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     @Override public void onResume() {

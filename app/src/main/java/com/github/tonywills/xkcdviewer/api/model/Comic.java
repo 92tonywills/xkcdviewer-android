@@ -11,7 +11,7 @@ public class Comic {
 
     private boolean favourite;
     private String localCopyPath;
-    private Bitmap localCopy;
+    private transient Bitmap localCopy;
 
     public String getAlt() {
         return alt;
