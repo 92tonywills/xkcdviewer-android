@@ -2,18 +2,12 @@ package com.github.tonywills.xkcdviewer.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import com.github.tonywills.xkcdviewer.api.model.Comic;
 import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -127,36 +121,11 @@ public final class XkcdService {
         comic.setFavourite(favourite);
         String comicJson = new Gson().toJson(comic);
         if (favourite) {
-            saveImageForComic(comic);
             favouriteComics.add(comicJson);
         } else {
             favouriteComics.remove(comicJson);
         }
         xkcdprefs.edit().putStringSet(PREF_KEY_FAVOURITES, favouriteComics).apply();
-    }
-
-    private void saveImageForComic(final Comic comic) {
-        new AsyncTask<Void, Void, File>() {
-            @Override protected File doInBackground(Void... params) {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                comic.getLocalCopy().compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                File file = new File(context.getFilesDir(), Uri.parse(comic.getImg()).getLastPathSegment());
-                try {
-                    boolean success = file.createNewFile();
-                    if (!success) throw new IOException("Could not create file");
-                    FileOutputStream fo = new FileOutputStream(file);
-                    fo.write(bytes.toByteArray());
-                    fo.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return file;
-            }
-
-            @Override protected void onPostExecute(File file) {
-                comic.setLocalCopyPath(file.getPath());
-            }
-        }.execute();
     }
 
     public interface ComicCallback {

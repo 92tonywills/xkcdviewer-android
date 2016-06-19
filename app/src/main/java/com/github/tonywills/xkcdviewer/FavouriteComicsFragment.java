@@ -77,7 +77,6 @@ public class FavouriteComicsFragment extends Fragment {
         favouritesList.setLayoutManager(new LinearLayoutManager(getContext()));
         XkcdService.getInstance(getContext()).getFavouriteComics(new XkcdService.ComicListCallback() {
             @Override public void complete(List<Comic> comics) {
-                Log.d(TAG, "complete() called with: " + "comics = [" + comics + "]");
                 FavouriteComicsFragment.this.comics.clear();
                 FavouriteComicsFragment.this.comics.addAll(comics);
                 adapter.notifyDataSetChanged();
