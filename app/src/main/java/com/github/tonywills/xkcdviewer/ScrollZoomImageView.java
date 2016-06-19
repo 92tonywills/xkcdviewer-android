@@ -63,7 +63,8 @@ public class ScrollZoomImageView extends ImageView {
     //
     private Matrix matrix, prevMatrix;
 
-    private static enum State { NONE, DRAG, ZOOM, FLING, ANIMATE_ZOOM };
+    private enum State {NONE, DRAG, ZOOM, FLING, ANIMATE_ZOOM}
+
     private State state;
 
     private float minScale;
@@ -96,7 +97,7 @@ public class ScrollZoomImageView extends ImageView {
     private GestureDetector mGestureDetector;
     private GestureDetector.OnDoubleTapListener doubleTapListener = null;
     private OnTouchListener userTouchListener = null;
-    private OnTouchImageViewListener touchImageViewListener = null;
+    private ScrollZoomImageViewListener touchImageViewListener = null;
 
     public ScrollZoomImageView(Context context) {
         super(context);
@@ -136,12 +137,11 @@ public class ScrollZoomImageView extends ImageView {
         super.setOnTouchListener(new PrivateOnTouchListener());
     }
 
-    @Override
-    public void setOnTouchListener(View.OnTouchListener l) {
+    @Override public void setOnTouchListener(View.OnTouchListener l) {
         userTouchListener = l;
     }
-    
-    public void setOnTouchImageViewListener(OnTouchImageViewListener l) {
+
+    public void setScrollZoomImageViewListener(ScrollZoomImageViewListener l) {
         touchImageViewListener = l;
     }
 
@@ -149,36 +149,31 @@ public class ScrollZoomImageView extends ImageView {
         doubleTapListener = l;
     }
 
-    @Override
-    public void setImageResource(int resId) {
+    @Override public void setImageResource(int resId) {
         super.setImageResource(resId);
         savePreviousImageValues();
         fitImageToView();
     }
     
-    @Override
-    public void setImageBitmap(Bitmap bm) {
+    @Override public void setImageBitmap(Bitmap bm) {
         super.setImageBitmap(bm);
         savePreviousImageValues();
         fitImageToView();
     }
     
-    @Override
-    public void setImageDrawable(Drawable drawable) {
+    @Override public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
         savePreviousImageValues();
         fitImageToView();
     }
     
-    @Override
-    public void setImageURI(Uri uri) {
+    @Override public void setImageURI(Uri uri) {
         super.setImageURI(uri);
         savePreviousImageValues();
         fitImageToView();
     }
     
-    @Override
-    public void setScaleType(ScaleType type) {
+    @Override public void setScaleType(ScaleType type) {
         if (type == ScaleType.FIT_START || type == ScaleType.FIT_END) {
             throw new UnsupportedOperationException("TouchImageView does not support FIT_START or FIT_END");
         }
@@ -197,13 +192,13 @@ public class ScrollZoomImageView extends ImageView {
         }
     }
     
-    @Override
-    public ScaleType getScaleType() {
+    @Override public ScaleType getScaleType() {
         return mScaleType;
     }
     
     /**
      * Returns false if image is in initial, unzoomed state. False, otherwise.
+     *
      * @return true if image is zoomed
      */
     public boolean isZoomed() {
@@ -212,6 +207,7 @@ public class ScrollZoomImageView extends ImageView {
     
     /**
      * Return a Rect representing the zoomed image.
+     *
      * @return rect representing zoomed image
      */
     public RectF getZoomedRect() {
@@ -241,8 +237,7 @@ public class ScrollZoomImageView extends ImageView {
         }
     }
     
-    @Override
-    public Parcelable onSaveInstanceState() {
+    @Override public Parcelable onSaveInstanceState() {
         Bundle bundle = new Bundle();
         bundle.putParcelable("instanceState", super.onSaveInstanceState());
         bundle.putFloat("saveScale", normalizedScale);
@@ -256,8 +251,7 @@ public class ScrollZoomImageView extends ImageView {
         return bundle;
     }
     
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
+    @Override public void onRestoreInstanceState(Parcelable state) {
         if (state instanceof Bundle) {
             Bundle bundle = (Bundle) state;
             normalizedScale = bundle.getFloat("saveScale");
@@ -275,25 +269,25 @@ public class ScrollZoomImageView extends ImageView {
         super.onRestoreInstanceState(state);
     }
     
-    @Override
-    protected void onDraw(Canvas canvas) {
+    @Override protected void onDraw(Canvas canvas) {
         onDrawReady = true;
         imageRenderedAtLeastOnce = true;
         if (delayedZoomVariables != null) {
-            setZoom(delayedZoomVariables.scale, delayedZoomVariables.focusX, delayedZoomVariables.focusY, delayedZoomVariables.scaleType);
+            setZoom(delayedZoomVariables.scale, delayedZoomVariables.focusX,
+                    delayedZoomVariables.focusY, delayedZoomVariables.scaleType);
             delayedZoomVariables = null;
         }
         super.onDraw(canvas);
     }
     
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    @Override public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         savePreviousImageValues();
     }
     
     /**
      * Get the max zoom multiplier.
+     *
      * @return max zoom multiplier.
      */
     public float getMaxZoom() {
@@ -302,6 +296,7 @@ public class ScrollZoomImageView extends ImageView {
 
     /**
      * Set the max zoom multiplier. Default value: 3.
+     *
      * @param max max zoom multiplier.
      */
     public void setMaxZoom(float max) {
@@ -311,6 +306,7 @@ public class ScrollZoomImageView extends ImageView {
     
     /**
      * Get the min zoom multiplier.
+     *
      * @return min zoom multiplier.
      */
     public float getMinZoom() {
@@ -320,6 +316,7 @@ public class ScrollZoomImageView extends ImageView {
     /**
      * Get the current zoom. This is the zoom relative to the initial
      * scale, not the original resource.
+     *
      * @return current zoom multiplier.
      */
     public float getCurrentZoom() {
@@ -328,6 +325,7 @@ public class ScrollZoomImageView extends ImageView {
     
     /**
      * Set the min zoom multiplier. Default value: 1.
+     *
      * @param min min zoom multiplier.
      */
     public void setMinZoom(float min) {
@@ -345,6 +343,7 @@ public class ScrollZoomImageView extends ImageView {
     
     /**
      * Set zoom to the specified scale. Image will be centered by default.
+     *
      * @param scale
      */
     public void setZoom(float scale) {
@@ -354,8 +353,9 @@ public class ScrollZoomImageView extends ImageView {
     /**
      * Set zoom to the specified scale. Image will be centered around the point
      * (focusX, focusY). These floats range from 0 to 1 and denote the focus point
-     * as a fraction from the left and top of the view. For example, the top left 
+     * as a fraction from the left and top of the view. For example, the top left
      * corner of the image would be (0, 0). And the bottom right corner would be (1, 1).
+     *
      * @param scale
      * @param focusX
      * @param focusY
@@ -367,8 +367,9 @@ public class ScrollZoomImageView extends ImageView {
     /**
      * Set zoom to the specified scale. Image will be centered around the point
      * (focusX, focusY). These floats range from 0 to 1 and denote the focus point
-     * as a fraction from the left and top of the view. For example, the top left 
+     * as a fraction from the left and top of the view. For example, the top left
      * corner of the image would be (0, 0). And the bottom right corner would be (1, 1).
+     *
      * @param scale
      * @param focusX
      * @param focusY
@@ -401,6 +402,7 @@ public class ScrollZoomImageView extends ImageView {
     /**
      * Set zoom parameters equal to another TouchImageView. Including scale, position,
      * and ScaleType.
+     *
      * @param img
      */
     public void setZoom(ScrollZoomImageView img) {
@@ -410,9 +412,10 @@ public class ScrollZoomImageView extends ImageView {
     
     /**
      * Return the point at the center of the zoomed image. The PointF coordinates range
-     * in value between 0 and 1 and the focus point is denoted as a fraction from the left 
-     * and top of the view. For example, the top left corner of the image would be (0, 0). 
+     * in value between 0 and 1 and the focus point is denoted as a fraction from the left
+     * and top of the view. For example, the top left corner of the image would be (0, 0).
      * And the bottom right corner would be (1, 1).
+     *
      * @return PointF representing the scroll position of the zoomed image.
      */
     public PointF getScrollPosition() {
@@ -431,7 +434,8 @@ public class ScrollZoomImageView extends ImageView {
     
     /**
      * Set the focus point of the zoomed image. The focus points are denoted as a fraction from the
-     * left and top of the view. The focus points can range in value between 0 and 1. 
+     * left and top of the view. The focus points can range in value between 0 and 1.
+     *
      * @param focusX
      * @param focusY
      */
@@ -440,7 +444,7 @@ public class ScrollZoomImageView extends ImageView {
     }
     
     /**
-     * Performs boundary checking and fixes the image matrix if it 
+     * Performs boundary checking and fixes the image matrix if it
      * is out of bounds.
      */
     private void fixTrans() {
@@ -460,7 +464,7 @@ public class ScrollZoomImageView extends ImageView {
      * When transitioning from zooming from focus to zoom from center (or vice versa)
      * the image can become unaligned within the view. This is apparent when zooming
      * quickly. When the content size is less than the view size, the content will often
-     * be centered incorrectly within the view. fixScaleTrans first calls fixTrans() and 
+     * be centered incorrectly within the view. fixScaleTrans first calls fixTrans() and
      * then makes sure the image is centered correctly within the view.
      */
     private void fixScaleTrans() {
@@ -488,10 +492,12 @@ public class ScrollZoomImageView extends ImageView {
             maxTrans = 0;
         }
 
-        if (trans < minTrans)
+        if (trans < minTrans) {
             return -trans + minTrans;
-        if (trans > maxTrans)
+        }
+        if (trans > maxTrans) {
             return -trans + maxTrans;
+        }
         return 0;
     }
     
@@ -510,8 +516,7 @@ public class ScrollZoomImageView extends ImageView {
         return matchViewHeight * normalizedScale;
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         Drawable drawable = getDrawable();
         if (drawable == null || drawable.getIntrinsicWidth() == 0 || drawable.getIntrinsicHeight() == 0) {
             setMeasuredDimension(0, 0);
@@ -632,14 +637,16 @@ public class ScrollZoomImageView extends ImageView {
             //
             float prevActualWidth = prevMatchViewWidth * normalizedScale;
             float actualWidth = getImageWidth();
-            translateMatrixAfterRotate(Matrix.MTRANS_X, transX, prevActualWidth, actualWidth, prevViewWidth, viewWidth, drawableWidth);
+            translateMatrixAfterRotate(Matrix.MTRANS_X, transX, prevActualWidth, actualWidth,
+                    prevViewWidth, viewWidth, drawableWidth);
             
             //
             // Height
             //
             float prevActualHeight = prevMatchViewHeight * normalizedScale;
             float actualHeight = getImageHeight();
-            translateMatrixAfterRotate(Matrix.MTRANS_Y, transY, prevActualHeight, actualHeight, prevViewHeight, viewHeight, drawableHeight);
+            translateMatrixAfterRotate(Matrix.MTRANS_Y, transY, prevActualHeight, actualHeight,
+                    prevViewHeight, viewHeight, drawableHeight);
             
             //
             // Set the matrix to the adjusted scale and translate values.
@@ -681,18 +688,19 @@ public class ScrollZoomImageView extends ImageView {
     }
     
     /**
-     * After rotating, the matrix needs to be translated. This function finds the area of image 
+     * After rotating, the matrix needs to be translated. This function finds the area of image
      * which was previously centered and adjusts translations so that is again the center, post-rotation.
      *
-     * @param axis Matrix.MTRANS_X or Matrix.MTRANS_Y
-     * @param trans the value of trans in that axis before the rotation
+     * @param axis          Matrix.MTRANS_X or Matrix.MTRANS_Y
+     * @param trans         the value of trans in that axis before the rotation
      * @param prevImageSize the width/height of the image before the rotation
-     * @param imageSize width/height of the image after rotation
-     * @param prevViewSize width/height of view before rotation
-     * @param viewSize width/height of view after rotation
-     * @param drawableSize width/height of drawable
+     * @param imageSize     width/height of the image after rotation
+     * @param prevViewSize  width/height of view before rotation
+     * @param viewSize      width/height of view after rotation
+     * @param drawableSize  width/height of drawable
      */
-    private void translateMatrixAfterRotate(int axis, float trans, float prevImageSize, float imageSize, int prevViewSize, int viewSize, int drawableSize) {
+    private void translateMatrixAfterRotate(int axis, float trans, float prevImageSize,
+                                            float imageSize, int prevViewSize, int viewSize, int drawableSize) {
         if (imageSize < viewSize) {
             //
             // The width/height of image is less than the view's width/height. Center it.
@@ -724,8 +732,7 @@ public class ScrollZoomImageView extends ImageView {
         return canScrollHorizontally(direction);
     }
     
-    @Override
-    public boolean canScrollHorizontally(int direction) {
+    @Override public boolean canScrollHorizontally(int direction) {
         matrix.getValues(m);
         float x = m[Matrix.MTRANS_X];
 
@@ -745,33 +752,29 @@ public class ScrollZoomImageView extends ImageView {
     /**
      * Gesture Listener detects a single click or long click and passes that on
      * to the view's listener.
-     * @author Ortiz
      *
+     * @author Ortiz
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
         @Override
-        public boolean onSingleTapConfirmed(MotionEvent e)
-        {
-            if(doubleTapListener != null) {
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            if (doubleTapListener != null) {
                 return doubleTapListener.onSingleTapConfirmed(e);
             }
             return performClick();
         }
         
-        @Override
-        public void onLongPress(MotionEvent e)
-        {
+        @Override public void onLongPress(MotionEvent e) {
             performLongClick();
         }
         
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-        {
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (fling != null) {
                 //
                 // If a previous fling is still active, it should be cancelled so that two flings
-                // are not run simultaenously.
+                // are not run simultaneously.
                 //
                 fling.cancelFling();
             }
@@ -780,10 +783,9 @@ public class ScrollZoomImageView extends ImageView {
             return super.onFling(e1, e2, velocityX, velocityY);
         }
         
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
+        @Override public boolean onDoubleTap(MotionEvent e) {
             boolean consumed = false;
-            if(doubleTapListener != null) {
+            if (doubleTapListener != null) {
                 consumed = doubleTapListener.onDoubleTap(e);
             }
             if (state == State.NONE) {
@@ -797,22 +799,22 @@ public class ScrollZoomImageView extends ImageView {
 
         @Override
         public boolean onDoubleTapEvent(MotionEvent e) {
-            if(doubleTapListener != null) {
+            if (doubleTapListener != null) {
                 return doubleTapListener.onDoubleTapEvent(e);
             }
             return false;
         }
     }
     
-    public interface OnTouchImageViewListener {
-        public void onMove();
+    public interface ScrollZoomImageViewListener {
+        void onMove();
     }
     
     /**
      * Responsible for all touch events. Handles the heavy lifting of drag and also sends
      * touch events to Scale Detector and Gesture Detector.
-     * @author Ortiz
      *
+     * @author Ortiz
      */
     private class PrivateOnTouchListener implements OnTouchListener {
 
@@ -831,8 +833,9 @@ public class ScrollZoomImageView extends ImageView {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         last.set(curr);
-                        if (fling != null)
+                        if (fling != null) {
                             fling.cancelFling();
+                        }
                         setState(State.DRAG);
                         break;
 
@@ -860,12 +863,12 @@ public class ScrollZoomImageView extends ImageView {
             //
             // User-defined OnTouchListener
             //
-            if(userTouchListener != null) {
+            if (userTouchListener != null) {
                 userTouchListener.onTouch(v, event);
             }
             
             //
-            // OnTouchImageViewListener is set: TouchImageView dragged by user.
+            // ScrollZoomImageViewListener is set: TouchImageView dragged by user.
             //
             if (touchImageViewListener != null) {
                 touchImageViewListener.onMove();
@@ -880,8 +883,8 @@ public class ScrollZoomImageView extends ImageView {
 
     /**
      * ScaleListener detects user two finger scaling and scales image.
-     * @author Ortiz
      *
+     * @author Ortiz
      */
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -895,7 +898,7 @@ public class ScrollZoomImageView extends ImageView {
             scaleImage(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY(), true);
 
             //
-            // OnTouchImageViewListener is set: TouchImageView pinch zoomed by user.
+            // ScrollZoomImageViewListener is set: TouchImageView pinch zoomed by user.
             //
             if (touchImageViewListener != null) {
                 touchImageViewListener.onMove();
@@ -954,8 +957,8 @@ public class ScrollZoomImageView extends ImageView {
     /**
      * DoubleTapZoom calls a series of runnables which apply
      * an animated zoom in/out graphic to the image.
-     * @author Ortiz
      *
+     * @author Ortiz
      */
     private class DoubleTapZoom implements Runnable {
 
@@ -995,7 +998,7 @@ public class ScrollZoomImageView extends ImageView {
             setImageMatrix(matrix);
 
             //
-            // OnTouchImageViewListener is set: double tap runnable updates listener
+            // ScrollZoomImageViewListener is set: double tap runnable updates listener
             // with every frame.
             //
             if (touchImageViewListener != null) {
@@ -1020,6 +1023,7 @@ public class ScrollZoomImageView extends ImageView {
          * Interpolate between where the image should start and end in order to translate
          * the image so that the point that is touched is what ends up centered at the end
          * of the zoom.
+         *
          * @param t
          */
         private void translateImageToCenterTouchPosition(float t) {
@@ -1031,6 +1035,7 @@ public class ScrollZoomImageView extends ImageView {
 
         /**
          * Use interpolator to get t
+         *
          * @return
          */
         private float interpolate() {
@@ -1043,6 +1048,7 @@ public class ScrollZoomImageView extends ImageView {
         /**
          * Interpolate the current targeted zoom and get the delta
          * from the current zoom.
+         *
          * @param t
          * @return
          */
@@ -1053,12 +1059,13 @@ public class ScrollZoomImageView extends ImageView {
     }
     
     /**
-     * This function will transform the coordinates in the touch event to the coordinate 
+     * This function will transform the coordinates in the touch event to the coordinate
      * system of the drawable that the imageview contain
-     * @param x x-coordinate of touch event
-     * @param y y-coordinate of touch event
+     *
+     * @param x            x-coordinate of touch event
+     * @param y            y-coordinate of touch event
      * @param clipToBitmap Touch event may occur within view, but outside image content. True, to clip return value
-     * 			to the bounds of the bitmap size.
+     *                     to the bounds of the bitmap size.
      * @return Coordinates of the point touched, in the coordinate system of the original drawable.
      */
     private PointF transformCoordTouchToBitmap(float x, float y, boolean clipToBitmap) {
@@ -1075,12 +1082,13 @@ public class ScrollZoomImageView extends ImageView {
             finalY = Math.min(Math.max(finalY, 0), origH);
         }
 
-        return new PointF(finalX , finalY);
+        return new PointF(finalX, finalY);
     }
     
     /**
      * Inverse of transformCoordTouchToBitmap. This function will transform the coordinates in the
      * drawable's coordinate system to the view's coordinate system.
+     *
      * @param bx x-coordinate in original bitmap coordinate system
      * @param by y-coordinate in original bitmap coordinate system
      * @return Coordinates of the point in the view's coordinate system.
@@ -1093,15 +1101,15 @@ public class ScrollZoomImageView extends ImageView {
         float py = by / origH;
         float finalX = m[Matrix.MTRANS_X] + getImageWidth() * px;
         float finalY = m[Matrix.MTRANS_Y] + getImageHeight() * py;
-        return new PointF(finalX , finalY);
+        return new PointF(finalX, finalY);
     }
     
     /**
      * Fling launches sequential runnables which apply
      * the fling graphic to the image. The values for the translation
      * are interpolated by the Scroller.
-     * @author Ortiz
      *
+     * @author Ortiz
      */
     private class Fling implements Runnable {
 
@@ -1150,7 +1158,7 @@ public class ScrollZoomImageView extends ImageView {
         public void run() {
 
             //
-            // OnTouchImageViewListener is set: TouchImageView listener has been flung by user.
+            // ScrollZoomImageViewListener is set: TouchImageView listener has been flung by user.
             // Listener runnable updated with each frame of fling animation.
             //
             if (touchImageViewListener != null) {
@@ -1250,7 +1258,7 @@ public class ScrollZoomImageView extends ImageView {
             postOnAnimation(runnable);
             
         } else {
-            postDelayed(runnable, 1000/60);
+            postDelayed(runnable, 1000 / 60);
         }
     }
     
